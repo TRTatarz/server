@@ -35,7 +35,7 @@ public class OpenRouterClient {
         headers.setBearerAuth(apiKey);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("model", "openai/gpt-4o-mini");
+        body.put("model", "openai/gpt-oss-120b");
         body.put("messages", request.getMessages());
 
         HttpEntity<Map<String, Object>> entity =
