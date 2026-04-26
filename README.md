@@ -1,3 +1,5 @@
-How to run? \n
-cd backend \n
+How to run? 
+
+cd backend
+
 ./mvnw spring-boot:run
