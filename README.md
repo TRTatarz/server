@@ -1,3 +1,3 @@
-How to run? 
-cd seever
+How to run? /n
+cd backend /n
 ./mvnw spring-boot:run
