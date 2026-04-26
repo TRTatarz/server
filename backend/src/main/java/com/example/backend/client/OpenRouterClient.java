@@ -1,14 +1,20 @@
 package com.example.backend.client;
 
-import com.example.backend.dto.ChatRequest;
-import com.example.backend.dto.OpenRouterResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+
+import com.example.backend.dto.ChatRequest;
+import com.example.backend.dto.OpenRouterResponse;
 
 @Component
 public class OpenRouterClient {
@@ -17,6 +23,9 @@ public class OpenRouterClient {
 
     @Value("${openrouter.api.key}")
     private String apiKey;
+
+    @Value("${openrouter.api.model:openai/gpt-oss-120b}") 
+    private String modelName;
 
     public OpenRouterClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -35,24 +44,33 @@ public class OpenRouterClient {
         headers.setBearerAuth(apiKey);
 
         Map<String, Object> body = new HashMap<>();
-        body.put("model", "openai/gpt-oss-120b");
+        body.put("model", modelName);
         body.put("messages", request.getMessages());
 
-        HttpEntity<Map<String, Object>> entity =
-                new HttpEntity<>(body, headers);
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<OpenRouterResponse> response =
-                restTemplate.exchange(
-                        url,
-                        HttpMethod.POST,
-                        entity,
-                        OpenRouterResponse.class
-                );
+        try {
 
-        return response.getBody()
-                .getChoices()
-                .get(0)
-                .getMessage()
-                .getContent();
+            ResponseEntity<OpenRouterResponse> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    entity,
+                    OpenRouterResponse.class
+            );
+
+     
+            OpenRouterResponse responseBody = response.getBody();
+            if (responseBody != null && 
+                responseBody.getChoices() != null && 
+                !responseBody.getChoices().isEmpty()) {
+                
+                return responseBody.getChoices().get(0).getMessage().getContent();
+            }
+
+            return "AI returned an empty response.";
+
+        } catch (RestClientException e) {
+            return "Error calling AI: " + e.getMessage();
+        }
     }
 }
