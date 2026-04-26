@@ -31,7 +31,7 @@ public class CharacterController {
         if (userId != null) {
             return characterRepository.findByUserId(userId);
         }
-        return characterRepository.findAll(); 
+        return characterRepository.findAll();
     }
 
     @PostMapping
@@ -68,6 +68,15 @@ public class CharacterController {
     public ChatCharacter activateCharacter(@PathVariable Long id) {
         return characterRepository.findById(id).map(character -> {
             character.setHasMessages(true);
+            return characterRepository.save(character);
+        }).orElseThrow(() -> new RuntimeException("Character not found"));
+    }
+
+    @PatchMapping("/{id}/clear-chat")
+    public ChatCharacter clearChat(@PathVariable Long id) {
+        return characterRepository.findById(id).map(character -> {
+            character.setHasMessages(false);
+            character.setSessionId("session-" + System.currentTimeMillis());
             return characterRepository.save(character);
         }).orElseThrow(() -> new RuntimeException("Character not found"));
     }
