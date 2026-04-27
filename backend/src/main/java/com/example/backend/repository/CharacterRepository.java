@@ -1,6 +1,6 @@
 package com.example.backend.repository;
 
-import java.util.List; // Add this import
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +11,6 @@ public interface CharacterRepository extends JpaRepository<ChatCharacter, Long> 
     List<ChatCharacter> findByUserId(Long userId);
 
     ChatCharacter findBySessionId(String sessionId);
+
+    List<ChatCharacter> findByUserIdIsNotNull();
 }

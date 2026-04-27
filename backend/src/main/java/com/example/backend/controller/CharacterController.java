@@ -36,8 +36,6 @@ public class CharacterController {
 
     @PostMapping
     public ChatCharacter createCharacter(@RequestBody ChatCharacter character) {
-        // Just save it—since you added userId to the Entity, 
-        // it will be saved correctly if the frontend sends it.
         return characterRepository.save(character);
     }
 
@@ -50,7 +48,6 @@ public class CharacterController {
             character.setPersonality(characterDetails.getPersonality());
             character.setGreeting(characterDetails.getGreeting());
             
-            // Ensure the userId stays with the character during updates
             if (characterDetails.getUserId() != null) {
                 character.setUserId(characterDetails.getUserId());
             }
@@ -79,5 +76,10 @@ public class CharacterController {
             character.setSessionId("session-" + System.currentTimeMillis());
             return characterRepository.save(character);
         }).orElseThrow(() -> new RuntimeException("Character not found"));
+    }
+
+    @GetMapping("/user")
+    public List<ChatCharacter> getUserCharacters(@RequestParam Long userId) {
+        return characterRepository.findByUserId(userId);
     }
 }

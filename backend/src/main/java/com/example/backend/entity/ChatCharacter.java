@@ -1,6 +1,5 @@
 package com.example.backend.entity;
 
-// Add these imports to remove the red lines:
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
